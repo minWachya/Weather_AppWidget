@@ -1,0 +1,12 @@
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="150dp"
+    android:minHeight="40dp"
+    android:updatePeriodMillis="3600000"
+    android:initialLayout="@layout/weather_appwidget">
+</appwidget-provider>
+
+
+<!--    android:previewImage="@drawable/ic_launcher_foreground"-->
+<!--    android:configure="com.example.android.WeatherAppWidgetConfigure"-->
+<!--    android:resizeMode="horizontal|vertical"-->
+<!--    android:widgetCategory="home_screen"-->
