@@ -6,7 +6,9 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.service.autofill.OnClickAction
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -22,18 +24,23 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         // 앱 위젯 레이아웃 가져오기
         val views = RemoteViews( context.packageName, R.layout.weather_appwidget)
 
+        // 해당 위젯을 클릭했을 때 특정 페이지로 이동시켜준다.
+        val pendingIntent: PendingIntent = Intent(context, MainActivity::class.java)
+                .let { intent ->
+                    PendingIntent.getActivity(context, 0, intent, 0)
+                }
+        views.setOnClickPendingIntent(R.id.imgSky, pendingIntent)
+
         // 준비 단계 : base_date(발표 일자), base_time(발표 시각)
         // 현재 날짜, 시간 정보 가져오기
         val cal = Calendar.getInstance()
         var base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time) // 현재 날짜
-        val time = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시간
+        var time = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시간
         // API 가져오기 적당하게 변환
         val base_time = getTime(time)
-        // 현재 시각이 00시가 넘었다면 어제 예보한 데이터를 가져와야함
-        if (base_time >= "2000") {
-            cal.add(Calendar.DATE, -1).toString()
-            base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time)
-        }
+
+        // 시간 설정
+        views.setTextViewText(R.id.tvTime, base_time)
 
         // 날씨 정보 가져오기
         // (응답 자료 형식-"JSON", 한 페이지 결과 수 = 10, 페이지 번호 = 1, 발표 날싸, 발표 시각, 예보지점 좌표)
@@ -59,9 +66,10 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                     }
                     // 텍스트뷰 설정
                     setTextView(views, sky, temp)   // @RequiresApi(Build.VERSION_CODES.M)
-                    // 업데이트 수행
-                    appWidgetManager.updateAppWidget(appWidgetIds, views)
                 }
+
+                // 업데이트 수행
+                appWidgetManager.updateAppWidget(appWidgetIds, views)
             }
 
             // 응답 실패 시
@@ -69,8 +77,16 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                 Log.d("api fail", t.message.toString())
             }
         })
-    }
 
+        // 업데이트 시간을 현재 시간으로 수정하기
+        views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
+
+        // 업데이트 버튼 누르면 동작하기
+
+
+        // 업데이트 수행
+        appWidgetManager.updateAppWidget(appWidgetIds, views)
+    }
     // 텍스트 뷰에 날씨 정보 보여주기
     @RequiresApi(Build.VERSION_CODES.M)
     fun setTextView(views : RemoteViews, sky : String, temp : String) {
@@ -98,35 +114,30 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
             else -> result = "패딩, 누빔 옷, 목도리"
         }
         views.setTextViewText(R.id.tvRecommends, result)
-
-        // 시간 설정
-        views.setTextViewText(R.id.tvTime, SimpleDateFormat("MMdd, HHmm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
     }
 
     // baseTime 설정하기
     fun getTime(time : String) : String {
-        var result = ""
-        when(time) {
-            in "00".."02" -> result = "2300"    // 00~02
-            in "03".."05" -> result = "0200"    // 03~05
-            in "06".."08" -> result = "0500"    // 06~08
-            in "09".."11" -> result = "0800"    // 09~11
-            in "12".."14" -> result = "1100"    // 12~14
-            in "15".."17" -> result = "1400"    // 15~17
-            in "18".."20" -> result = "1700"    // 18~20
-            else -> result = "2000"             // 21~23
+        var baseTime = ""
+        when(time) {                // baseTime   // 현재 시간대     // fcstTime
+            in "02".."04" -> baseTime = "0200"    // 02~04          // 0300
+            in "05".."07" -> baseTime = "0500"    // 05~07          // 0600
+            in "08".."10" -> baseTime = "0800"    // 08~10          // 0900
+            in "11".."13" -> baseTime = "1100"    // 11~13          // 1200
+            in "14".."16" -> baseTime = "1400"    // 12~16          // 1500
+            in "17".."19" -> baseTime = "1700"    // 17~19          // 1700
+            in "20".."22" -> baseTime = "2000"    // 20~22          // 2000
+            else -> baseTime = "2000"             // 23~01          // 0000
         }
-        return result
+        return baseTime
     }
 
-    // 유저가 앱 위젯을 최초로 추가될 때때호출
-    // 알람 등록
+    // 유저가 앱 위젯을 최초로 추가될 때 호출
     override fun onEnabled(context: Context?) {
         super.onEnabled(context)
     }
 
     // 유저가 엡 위젯을 회초로 삭제될 때 호출
-    // 알람 해제
     override fun onDisabled(context: Context?) {
         super.onDisabled(context)
     }
