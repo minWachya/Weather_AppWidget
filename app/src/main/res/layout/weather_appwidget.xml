@@ -16,7 +16,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/ic_launcher_foreground"
-            android:layout_marginRight="40dp"/>
+            android:layout_marginRight="20dp"/>
         <TextView
             android:id="@+id/tvTemp"
             android:layout_width="wrap_content"
@@ -24,7 +24,14 @@
             android:text="온도"
             android:textSize="20dp"
             android:textColor="@color/black"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"/>
+        <ImageView
+            android:id="@+id/imgRefresh"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/refresh"
+            android:layout_gravity="center"/>
     </LinearLayout>
 
     <TextView

@@ -5,32 +5,45 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.service.autofill.OnClickAction
 import android.util.Log
-import android.view.View
 import android.widget.RemoteViews
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
 class WeatherAppWidgetProvider : AppWidgetProvider() {
+    private val ACTION_BTN = "ButtonClick"
 
     // 위젯이 추가될 때마다 호출
-    override fun onUpdate( context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray ) {
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // 앱 위젯 레이아웃 가져오기
-        val views = RemoteViews( context.packageName, R.layout.weather_appwidget)
+        val views = RemoteViews(context.packageName, R.layout.weather_appwidget)
 
-        // 해당 위젯을 클릭했을 때 특정 페이지로 이동시켜준다.
+        // 날씨 이미지 클릭 시 앱으로 이동
         val pendingIntent: PendingIntent = Intent(context, MainActivity::class.java)
                 .let { intent ->
                     PendingIntent.getActivity(context, 0, intent, 0)
                 }
         views.setOnClickPendingIntent(R.id.imgSky, pendingIntent)
 
+        // 업데이트 이미지 누르면 업데이트 하기
+        val widgetIntent = Intent(context, WeatherAppWidgetProvider::class.java).setAction(ACTION_BTN)
+        views.setOnClickPendingIntent(R.id.imgRefresh, PendingIntent.getBroadcast(context, 0, widgetIntent, 0))
+
+        // 날씨 정보 가져오기
+        getWeatherInfo(views, appWidgetManager, appWidgetIds)
+
+        // 업데이트 시간을 현재 시간으로 수정하기
+        views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
+
+        // 업데이트 수행
+        appWidgetManager.updateAppWidget(appWidgetIds, views)
+    }
+
+    // 날씨 정보 가져오기
+    fun getWeatherInfo(views: RemoteViews, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // 준비 단계 : base_date(발표 일자), base_time(발표 시각)
         // 현재 날짜, 시간 정보 가져오기
         val cal = Calendar.getInstance()
@@ -47,9 +60,8 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         val call = ApiObject.retrofitService.GetWeather(10, 1, "JSON", base_date, base_time, "55", "127")
 
         // 비동기적으로 실행하기
-        call.enqueue(object : retrofit2.Callback<WEATHER> {
+        call.enqueue(object : Callback<WEATHER> {
             // 응답 성공 시
-            @RequiresApi(Build.VERSION_CODES.M)
             override fun onResponse(call: Call<WEATHER>, response: Response<WEATHER>) {
                 if (response.isSuccessful) {
                     // 날씨 정보 가져오기
@@ -58,7 +70,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                     var sky = ""            // 하능 상태
                     var temp = ""           // 기온
                     for (i in 0..9) {
-                        when(it[i].category) {
+                        when (it[i].category) {
                             "SKY" -> sky = it[i].fcstValue          // 하늘 상태
                             "TMP" -> temp = it[i].fcstValue         // 기온
                             else -> continue
@@ -77,19 +89,11 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                 Log.d("api fail", t.message.toString())
             }
         })
-
-        // 업데이트 시간을 현재 시간으로 수정하기
-        views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
-
-        // 업데이트 버튼 누르면 동작하기
-
-
-        // 업데이트 수행
-        appWidgetManager.updateAppWidget(appWidgetIds, views)
     }
+
+
     // 텍스트 뷰에 날씨 정보 보여주기
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun setTextView(views : RemoteViews, sky : String, temp : String) {
+    fun setTextView(views: RemoteViews, sky: String, temp: String) {
         // 하능 상태
         when(sky) { // @RequiresApi(Build.VERSION_CODES.M)
             "1" -> views.setImageViewResource(R.id.imgSky, R.drawable.sun)          // 맑음
@@ -117,7 +121,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
     }
 
     // baseTime 설정하기
-    fun getTime(time : String) : String {
+    fun getTime(time: String) : String {
         var baseTime = ""
         when(time) {                // baseTime   // 현재 시간대     // fcstTime
             in "02".."04" -> baseTime = "0200"    // 02~04          // 0300
@@ -140,6 +144,21 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
     // 유저가 엡 위젯을 회초로 삭제될 때 호출
     override fun onDisabled(context: Context?) {
         super.onDisabled(context)
+    }
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        super.onReceive(context, intent)
+
+        if (intent?.action == ACTION_BTN) {
+            // 앱 위젯 레이아웃 가져오기
+            val views = RemoteViews(context!!.packageName, R.layout.weather_appwidget)
+            views.setTextViewText(R.id.tvRecommends, "버튼을 누르긴 함")
+            Log.d("mmm", "버ㅡㅡ느는")
+            // 날씨 정보 가져오기
+            // getWeatherInfo(views, appWidgetManager, widgetIds)
+            // 업데이트 시간을 현재 시간으로 수정하기
+            // views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
+        }
     }
 
 }
