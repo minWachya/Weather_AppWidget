@@ -60,7 +60,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         views.setTextViewText(R.id.tvTime, base_time)
 
         // 날씨 정보 가져오기
-        // (응답 자료 형식-"JSON", 한 페이지 결과 수 = 10, 페이지 번호 = 1, 발표 날싸, 발표 시각, 예보지점 좌표)
+        // (한 페이지 결과 수 = 10, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
         val call = ApiObject.retrofitService.GetWeather(10, 1, "JSON", base_date, base_time, "55", "127")
 
         // 비동기적으로 실행하기
@@ -99,7 +99,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
     // 텍스트 뷰에 날씨 정보 보여주기
     fun setTextView(views: RemoteViews, sky: String, temp: String) {
         // 하능 상태
-        when(sky) { // @RequiresApi(Build.VERSION_CODES.M)
+        when(sky) {
             "1" -> views.setImageViewResource(R.id.imgSky, R.drawable.sun)          // 맑음
             "3" -> views.setImageViewResource(R.id.imgSky, R.drawable.very_cloudy)  // 구름 많음
             "4" -> views.setImageViewResource(R.id.imgSky, R.drawable.cloudy)       // 흐림
@@ -153,6 +153,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         super.onDisabled(context)
     }
 
+    // 앱 위젯 브로드캐스트 수신
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
 
@@ -161,7 +162,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context!!.packageName, R.layout.weather_appwidget)
             // appWidgetManager 가져오기
             val appWidgetManager = AppWidgetManager.getInstance(context)
-            // 위젯 컴포넌ㅌ 가져오기
+            // 위젯 컴포넌트 가져오기
             val widget = ComponentName(context, WeatherAppWidgetProvider::class.java)
             // 날씨 정보 가져오기
             getWeatherInfo(views, appWidgetManager, appWidgetManager.getAppWidgetIds(widget))

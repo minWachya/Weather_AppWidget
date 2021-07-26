@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 날씨 정보 가져오기
-        // (응답 자료 형식-"JSON", 한 페이지 결과 수 = 10, 페이지 번호 = 1, 발표 날싸, 발표 시각, 예보지점 좌표)
+        // (한 페이지 결과 수 = 10, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
         val call = ApiObject.retrofitService.GetWeather(10, 1, "JSON", base_date, base_time, nx, ny)
 
         // 비동기적으로 실행하기
