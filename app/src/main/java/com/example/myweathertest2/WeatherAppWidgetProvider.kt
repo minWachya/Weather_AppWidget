@@ -3,10 +3,12 @@ package com.example.myweathertest2
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.RemoteViews
+import android.widget.Toast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,9 +37,6 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         // 날씨 정보 가져오기
         getWeatherInfo(views, appWidgetManager, appWidgetIds)
 
-        // 업데이트 시간을 현재 시간으로 수정하기
-        views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
-
         // 업데이트 수행
         appWidgetManager.updateAppWidget(appWidgetIds, views)
     }
@@ -51,6 +50,11 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         var time = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시간
         // API 가져오기 적당하게 변환
         val base_time = getTime(time)
+        // 현재 시각이 00시 01시라면 어제 예보한 데이터 가져오기
+        if (time == "00" || time == "01") {
+            cal.add(Calendar.DATE, -1).toString()
+            base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time)
+        }
 
         // 시간 설정
         views.setTextViewText(R.id.tvTime, base_time)
@@ -118,6 +122,9 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
             else -> result = "패딩, 누빔 옷, 목도리"
         }
         views.setTextViewText(R.id.tvRecommends, result)
+
+        // 업데이트 시간을 현재 시간으로 수정하기
+        views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
     }
 
     // baseTime 설정하기
@@ -152,12 +159,16 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         if (intent?.action == ACTION_BTN) {
             // 앱 위젯 레이아웃 가져오기
             val views = RemoteViews(context!!.packageName, R.layout.weather_appwidget)
-            views.setTextViewText(R.id.tvRecommends, "버튼을 누르긴 함")
-            Log.d("mmm", "버ㅡㅡ느는")
+            // appWidgetManager 가져오기
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            // 위젯 컴포넌ㅌ 가져오기
+            val widget = ComponentName(context, WeatherAppWidgetProvider::class.java)
             // 날씨 정보 가져오기
-            // getWeatherInfo(views, appWidgetManager, widgetIds)
-            // 업데이트 시간을 현재 시간으로 수정하기
-            // views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
+            getWeatherInfo(views, appWidgetManager, appWidgetManager.getAppWidgetIds(widget))
+            // 업데이트 하기
+            appWidgetManager.updateAppWidget(widget, views)
+
+            Toast.makeText(context, "업데이트 했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 

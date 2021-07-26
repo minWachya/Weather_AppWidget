@@ -64,6 +64,11 @@ class MainActivity : AppCompatActivity() {
         val time = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시간
         // API 가져오기 적당하게 변환
         base_time = getTime(time)
+        // 현재 시각이 00시 01시라면 어제 예보한 데이터 가져오기
+        if (time == "00" || time == "01") {
+            cal.add(Calendar.DATE, -1).toString()
+            base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time)
+        }
 
         // 날씨 정보 가져오기
         // (응답 자료 형식-"JSON", 한 페이지 결과 수 = 10, 페이지 번호 = 1, 발표 날싸, 발표 시각, 예보지점 좌표)
