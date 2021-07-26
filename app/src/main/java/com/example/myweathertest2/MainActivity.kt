@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         tvRainType.text = result
         // 습도
         tvHumidity.text = humidity + "%"
-        // 하능 상태
+        // 하늘 상태
         when(sky) {
             "1" -> result = "맑음"
             "3" -> result = "구름 많음"
