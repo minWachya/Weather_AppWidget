@@ -14,47 +14,9 @@
         android:text="오늘의 날씨"
         android:textSize="40dp"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-        <TextView
-            android:id="@+id/tvBaseTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="baseTime"
-            android:layout_marginRight="20dp"/>
-        <TextView
-            android:id="@+id/tvFcstTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="fcstTime"
-            android:layout_marginRight="20dp"/>
-        <TextView
-            android:id="@+id/tvFcstDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="fcstDate"/>
-    </LinearLayout>
-
     <TableLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="강수 확룔"
-                android:textSize="20dp"
-                android:paddingRight="30dp"/>
-            <TextView
-                android:id="@+id/tvRainRatio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="20dp"/>
-        </TableRow>
         <TableRow>
             <TextView
                 android:layout_width="wrap_content"

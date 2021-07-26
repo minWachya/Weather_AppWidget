@@ -49,7 +49,8 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         var base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time) // 현재 날짜
         var time = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시간
         // API 가져오기 적당하게 변환
-        val base_time = getTime(time)
+        //val base_time = getTime(time)
+        val base_time = "1900"
         // 현재 시각이 00시 01시라면 어제 예보한 데이터 가져오기
         if (time == "00" || time == "01") {
             cal.add(Calendar.DATE, -1).toString()
@@ -60,8 +61,8 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         views.setTextViewText(R.id.tvTime, base_time)
 
         // 날씨 정보 가져오기
-        // (한 페이지 결과 수 = 10, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
-        val call = ApiObject.retrofitService.GetWeather(10, 1, "JSON", base_date, base_time, "55", "127")
+        // (한 페이지 결과 수 = 60, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
+        val call = ApiObject.retrofitService.GetWeather(60, 1, "JSON", base_date, base_time, "55", "127")
 
         // 비동기적으로 실행하기
         call.enqueue(object : Callback<WEATHER> {
@@ -73,15 +74,18 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
 
                     var sky = ""            // 하능 상태
                     var temp = ""           // 기온
-                    for (i in 0..9) {
+                    for (i in 0..59) {
+                        if (it[i].fcstDate != base_date) continue
+
                         when (it[i].category) {
                             "SKY" -> sky = it[i].fcstValue          // 하늘 상태
                             "TMP" -> temp = it[i].fcstValue         // 기온
                             else -> continue
                         }
                     }
+                    Log.d("mmm wid", sky)
                     // 텍스트뷰 설정
-                    setTextView(views, sky, temp)   // @RequiresApi(Build.VERSION_CODES.M)
+                    //setTextView(views, sky, temp)   // @RequiresApi(Build.VERSION_CODES.M)
                 }
 
                 // 업데이트 수행
