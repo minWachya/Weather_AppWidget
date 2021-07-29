@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         val timeH = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시각
         val timeM = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 분
         // API 가져오기 적당하게 변환
-        base_time = getTime(timeH, timeM)
+        base_time = getBaseTime(timeH, timeM)
         // 현재 시각이 00시이고 45분 이하여서 baseTime이 2330이면 어제 정보 받아오기
         if (timeH == "00" && base_time == "2330") {
             cal.add(Calendar.DATE, -1).toString()
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // baseTime 설정하기
-    private fun getTime(h : String, m : String) : String {
+    private fun getBaseTime(h : String, m : String) : String {
         var result = ""
 
         // 45분 전이면
@@ -137,6 +137,5 @@ class MainActivity : AppCompatActivity() {
 
         return result
     }
-
 
 }

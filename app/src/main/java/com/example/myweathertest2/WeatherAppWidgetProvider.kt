@@ -47,12 +47,12 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         // 현재 날짜, 시간 정보 가져오기
         val cal = Calendar.getInstance()
         var base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time) // 현재 날짜
-        var time = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시간
+        val timeH = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시각
+        val timeM = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 분
         // API 가져오기 적당하게 변환
-        //val base_time = getTime(time)
-        val base_time = "1900"
-        // 현재 시각이 00시 01시라면 어제 예보한 데이터 가져오기
-        if (time == "00" || time == "01") {
+        var base_time = getBaseTime(timeH, timeM)
+        // 현재 시각이 00시이고 45분 이하여서 baseTime이 2330이면 어제 정보 받아오기
+        if (timeH == "00" && base_time == "2330") {
             cal.add(Calendar.DATE, -1).toString()
             base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time)
         }
@@ -70,22 +70,26 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
             override fun onResponse(call: Call<WEATHER>, response: Response<WEATHER>) {
                 if (response.isSuccessful) {
                     // 날씨 정보 가져오기
-                    var it: List<ITEM> = response.body()!!.response.body.items.item
+                    val it: List<ITEM> = response.body()!!.response.body.items.item
 
                     var sky = ""            // 하능 상태
-                    var temp = ""           // 기온
-                    for (i in 0..59) {
-                        if (it[i].fcstDate != base_date) continue
-
-                        when (it[i].category) {
-                            "SKY" -> sky = it[i].fcstValue          // 하늘 상태
-                            "TMP" -> temp = it[i].fcstValue         // 기온
-                            else -> continue
+                    var temp = "-1"           // 기온
+                    val totalCount = response.body()!!.response.body.totalCount - 1
+                    val curTime = it[0].fcstTime    // 현재 시간대
+                    for (i in 0..totalCount) {
+                        // 현재 시각 정보만 가져오기
+                        if (it[i].fcstTime == curTime) {
+                            when (it[i].category) {
+                                "SKY" -> sky = it[i].fcstValue          // 하늘 상태
+                                "T1H" -> temp = it[i].fcstValue         // 기온
+                                else -> continue
+                            }
                         }
+                        // 현재 시각 아니면 넘어가기
+                        else continue
                     }
-                    Log.d("mmm wid", sky)
                     // 텍스트뷰 설정
-                    //setTextView(views, sky, temp)   // @RequiresApi(Build.VERSION_CODES.M)
+                    setTextView(views, sky, temp.toInt())   // @RequiresApi(Build.VERSION_CODES.M)
                 }
 
                 // 업데이트 수행
@@ -101,7 +105,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
 
 
     // 텍스트 뷰에 날씨 정보 보여주기
-    fun setTextView(views: RemoteViews, sky: String, temp: String) {
+    fun setTextView(views: RemoteViews, sky: String, temp: Int) {
         // 하능 상태
         when(sky) {
             "1" -> views.setImageViewResource(R.id.imgSky, R.drawable.sun)          // 맑음
@@ -111,19 +115,20 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         }
 
         // 온도
-        views.setTextViewText(R.id.tvTemp, temp + "°")
+        views.setTextViewText(R.id.tvTemp, "${temp}°")
 
         // 기본 옷 추천
         var result = ""
-        when (temp.toInt()) {
-            in 5..8 -> result = "울 코트, 가죽 옷, 기모"
-            in 9..11 -> result = "트렌치 코트, 야상, 점퍼"
-            in 12..16 -> result = "자켓, 가디건, 청자켓"
-            in 17..19 -> result = "니트, 맨투맨, 후드, 긴바지"
-            in 20..22 -> result = "블라우스, 긴팔 티, 슬랙스"
-            in 23..27 -> result = "얇은 셔츠, 반바지, 면바지"
-            in 28..50 -> result = "민소매, 반바지, 린넨 옷"
-            else -> result = "패딩, 누빔 옷, 목도리"
+        if (temp == -1) result = "오류"
+        else result = when (temp) {
+            in 5..8 -> "울 코트, 가죽 옷, 기모"
+            in 9..11 -> "트렌치 코트, 야상, 점퍼"
+            in 12..16 -> "자켓, 가디건, 청자켓"
+            in 17..19 -> "니트, 맨투맨, 후드, 긴바지"
+            in 20..22 -> "블라우스, 긴팔 티, 슬랙스"
+            in 23..27 -> "얇은 셔츠, 반바지, 면바지"
+            in 28..50 -> "민소매, 반바지, 린넨 옷"
+            else -> "패딩, 누빔 옷, 목도리"
         }
         views.setTextViewText(R.id.tvRecommends, result)
 
@@ -132,19 +137,26 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
     }
 
     // baseTime 설정하기
-    fun getTime(time: String) : String {
-        var baseTime = ""
-        when(time) {                // baseTime   // 현재 시간대     // fcstTime
-            in "02".."04" -> baseTime = "0200"    // 02~04          // 0300
-            in "05".."07" -> baseTime = "0500"    // 05~07          // 0600
-            in "08".."10" -> baseTime = "0800"    // 08~10          // 0900
-            in "11".."13" -> baseTime = "1100"    // 11~13          // 1200
-            in "14".."16" -> baseTime = "1400"    // 12~16          // 1500
-            in "17".."19" -> baseTime = "1700"    // 17~19          // 1700
-            in "20".."22" -> baseTime = "2000"    // 20~22          // 2000
-            else -> baseTime = "2000"             // 23~01          // 0000
+    private fun getBaseTime(h : String, m : String) : String {
+        var result = ""
+
+        // 45분 전이면
+        if (m.toInt() < 45) {
+            // 0시면 2330
+            if (h == "00") result = "2330"
+            // 아니면 1시간 전 날씨 정보 부르기
+            else {
+                var resultH = h.toInt() - 1
+                // 1자리면 0 붙여서 2자리로 만들기
+                if (resultH < 10) result = "0" + resultH + "30"
+                // 2자리면 그대로
+                else result = resultH.toString() + "30"
+            }
         }
-        return baseTime
+        // 45분 이후면 바로 정보 받아오기
+        else result = h + "30"
+
+        return result
     }
 
     // 유저가 앱 위젯을 최초로 추가될 때 호출

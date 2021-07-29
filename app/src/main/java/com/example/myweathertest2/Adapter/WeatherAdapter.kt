@@ -46,11 +46,11 @@ class WeatherAdapter (var items : Array<ModelWeather>) : RecyclerView.Adapter<We
     // 강수 형태
     fun getRainType(rainType : String) : String {
         var result = ""
-        when(rainType) {
-            "0" -> result = "없음"
-            "1" -> result = "비"
-            "2" -> result = "비/눈"
-            "3" -> result = "눈"
+        result = when(rainType) {
+            "0" -> "없음"
+            "1" -> "비"
+            "2" -> "비/눈"
+            "3" -> "눈"
             else -> "오류 rainType : " + rainType
         }
         return result
@@ -59,10 +59,10 @@ class WeatherAdapter (var items : Array<ModelWeather>) : RecyclerView.Adapter<We
     // 하늘 상태
     fun getSky(sky : String) : String {
         var result = ""
-        when(sky) {
-            "1" -> result = "맑음"
-            "3" -> result = "구름 많음"
-            "4" -> result = "흐림"
+        result = when(sky) {
+            "1" -> "맑음"
+            "3" -> "구름 많음"
+            "4" -> "흐림"
             else -> "오류 rainType : " + sky
         }
         return result
@@ -71,15 +71,15 @@ class WeatherAdapter (var items : Array<ModelWeather>) : RecyclerView.Adapter<We
     // 옷 추천
     fun getRecommends(temp : Int) : String{
         var result = ""
-        when (temp) {
-            in 5..8 -> result = "울 코트, 가죽 옷, 기모"
-            in 9..11 -> result = "트렌치 코트, 야상, 점퍼"
-            in 12..16 -> result = "자켓, 가디건, 청자켓"
-            in 17..19 -> result = "니트, 맨투맨, 후드, 긴바지"
-            in 20..22 -> result = "블라우스, 긴팔 티, 슬랙스"
-            in 23..27 -> result = "얇은 셔츠, 반바지, 면바지"
-            in 28..50 -> result = "민소매, 반바지, 린넨 옷"
-            else -> result = "패딩, 누빔 옷, 목도리"
+        result = when (temp) {
+            in 5..8 -> "울 코트, 가죽 옷, 기모"
+            in 9..11 -> "트렌치 코트, 야상, 점퍼"
+            in 12..16 -> "자켓, 가디건, 청자켓"
+            in 17..19 -> "니트, 맨투맨, 후드, 긴바지"
+            in 20..22 -> "블라우스, 긴팔 티, 슬랙스"
+            in 23..27 -> "얇은 셔츠, 반바지, 면바지"
+            in 28..50 -> "민소매, 반바지, 린넨 옷"
+            else -> "패딩, 누빔 옷, 목도리"
         }
         return result
     }
