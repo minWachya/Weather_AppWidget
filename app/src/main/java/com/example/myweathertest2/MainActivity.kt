@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         // 리사이클러 뷰 매니저 설정
         weatherRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
 
+        tvDate.text = SimpleDateFormat("MM월 dd일", Locale.getDefault()).format(Calendar.getInstance().time) + "날씨"
+
         // nx, ny지점의 날씨 가져와서 설정하기
         setWeather(nx, ny)
 
