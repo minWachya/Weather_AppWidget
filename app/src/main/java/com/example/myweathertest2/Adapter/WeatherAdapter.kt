@@ -45,33 +45,28 @@ class WeatherAdapter (var items : Array<ModelWeather>) : RecyclerView.Adapter<We
 
     // 강수 형태
     fun getRainType(rainType : String) : String {
-        var result = ""
-        result = when(rainType) {
+        return when(rainType) {
             "0" -> "없음"
             "1" -> "비"
             "2" -> "비/눈"
             "3" -> "눈"
             else -> "오류 rainType : " + rainType
         }
-        return result
     }
 
     // 하늘 상태
     fun getSky(sky : String) : String {
-        var result = ""
-        result = when(sky) {
+        return when(sky) {
             "1" -> "맑음"
             "3" -> "구름 많음"
             "4" -> "흐림"
             else -> "오류 rainType : " + sky
         }
-        return result
     }
 
     // 옷 추천
     fun getRecommends(temp : Int) : String{
-        var result = ""
-        result = when (temp) {
+        return when (temp) {
             in 5..8 -> "울 코트, 가죽 옷, 기모"
             in 9..11 -> "트렌치 코트, 야상, 점퍼"
             in 12..16 -> "자켓, 가디건, 청자켓"
@@ -81,6 +76,5 @@ class WeatherAdapter (var items : Array<ModelWeather>) : RecyclerView.Adapter<We
             in 28..50 -> "민소매, 반바지, 린넨 옷"
             else -> "패딩, 누빔 옷, 목도리"
         }
-        return result
     }
 }
