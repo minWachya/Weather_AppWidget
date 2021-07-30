@@ -42,41 +42,12 @@
         android:textSize="14dp"
         android:textColor="@color/black"/>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="업데이트 : "
-            android:textSize="14dp"
-            android:textColor="@color/black"/>
-        <TextView
-            android:id="@+id/tvUpdate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MM/dd HH:mm"
-            android:textSize="14dp"
-            android:textColor="@color/black"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="baseTime : "
-            android:textSize="14dp"
-            android:textColor="@color/black"/>
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="HHmm"
-            android:textSize="14dp"
-            android:textColor="@color/black"/>
-    </LinearLayout>
+        android:text="MM/dd HH:mm"
+        android:textSize="14dp"
+        android:textColor="@color/black"/>
 
 </LinearLayout>

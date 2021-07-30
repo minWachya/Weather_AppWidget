@@ -57,9 +57,6 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
             base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time)
         }
 
-        // 시간 설정
-        views.setTextViewText(R.id.tvTime, base_time)
-
         // 날씨 정보 가져오기
         // (한 페이지 결과 수 = 60, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
         val call = ApiObject.retrofitService.GetWeather(60, 1, "JSON", base_date, base_time, "55", "127")
