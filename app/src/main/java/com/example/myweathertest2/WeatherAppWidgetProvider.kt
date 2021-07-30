@@ -6,9 +6,15 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.Point
+import android.os.Looper
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.Toast
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,7 +22,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class WeatherAppWidgetProvider : AppWidgetProvider() {
-    private val ACTION_BTN = "ButtonClick"
+    private val ACTION_BTN = "ButtonClick"  // 리프레시 버튼 누름
+
+    private var curPoint : Point? = null    // 현재 위치의 격자 좌표를 저장할 포인트
 
     // 위젯이 추가될 때마다 호출
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
@@ -34,11 +42,8 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         val widgetIntent = Intent(context, WeatherAppWidgetProvider::class.java).setAction(ACTION_BTN)
         views.setOnClickPendingIntent(R.id.imgRefresh, PendingIntent.getBroadcast(context, 0, widgetIntent, 0))
 
-        // 날씨 정보 가져오기
-        getWeatherInfo(views, appWidgetManager, appWidgetIds)
-
-        // 업데이트 수행
-        appWidgetManager.updateAppWidget(appWidgetIds, views)
+        // 내 위치 위경도 가져와서 날씨 정보 설정하기
+        requestLocation(context)
     }
 
     // 날씨 정보 가져오기
@@ -50,7 +55,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         val timeH = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시각
         val timeM = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 분
         // API 가져오기 적당하게 변환
-        var base_time = getBaseTime(timeH, timeM)
+        var base_time = Common().getBaseTime(timeH, timeM)
         // 현재 시각이 00시이고 45분 이하여서 baseTime이 2330이면 어제 정보 받아오기
         if (timeH == "00" && base_time == "2330") {
             cal.add(Calendar.DATE, -1).toString()
@@ -59,7 +64,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
 
         // 날씨 정보 가져오기
         // (한 페이지 결과 수 = 60, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
-        val call = ApiObject.retrofitService.GetWeather(60, 1, "JSON", base_date, base_time, "55", "127")
+        val call = ApiObject.retrofitService.GetWeather(60, 1, "JSON", base_date, base_time, curPoint!!.x, curPoint!!.y)
 
         // 비동기적으로 실행하기
         call.enqueue(object : Callback<WEATHER> {
@@ -133,29 +138,6 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
     }
 
-    // baseTime 설정하기
-    private fun getBaseTime(h : String, m : String) : String {
-        var result = ""
-
-        // 45분 전이면
-        if (m.toInt() < 45) {
-            // 0시면 2330
-            if (h == "00") result = "2330"
-            // 아니면 1시간 전 날씨 정보 부르기
-            else {
-                var resultH = h.toInt() - 1
-                // 1자리면 0 붙여서 2자리로 만들기
-                if (resultH < 10) result = "0" + resultH + "30"
-                // 2자리면 그대로
-                else result = resultH.toString() + "30"
-            }
-        }
-        // 45분 이후면 바로 정보 받아오기
-        else result = h + "30"
-
-        return result
-    }
-
     // 유저가 앱 위젯을 최초로 추가될 때 호출
     override fun onEnabled(context: Context?) {
         super.onEnabled(context)
@@ -172,17 +154,50 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
 
         if (intent?.action == ACTION_BTN) {
             // 앱 위젯 레이아웃 가져오기
-            val views = RemoteViews(context!!.packageName, R.layout.weather_appwidget)
-            // appWidgetManager 가져오기
-            val appWidgetManager = AppWidgetManager.getInstance(context)
-            // 위젯 컴포넌트 가져오기
-            val widget = ComponentName(context, WeatherAppWidgetProvider::class.java)
-            // 날씨 정보 가져오기
-            getWeatherInfo(views, appWidgetManager, appWidgetManager.getAppWidgetIds(widget))
-            // 업데이트 하기
-            appWidgetManager.updateAppWidget(widget, views)
+            requestLocation(context!!)
+        }
+    }
 
-            Toast.makeText(context, "업데이트 했습니다.", Toast.LENGTH_SHORT).show()
+    // 내 현재 위치의 위경도를 격자 좌표로 변환하여 해당 위치의 날씨정보 설정하기
+    private fun requestLocation(context: Context) {
+        val locationClient = LocationServices.getFusedLocationProviderClient(context)
+
+        try {
+            // 나의 현재 위치 요청
+            val locationRequest = LocationRequest.create()
+            locationRequest.run {
+                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+                interval = 60 * 1000    // 요청 간격(1초)
+            }
+            val locationCallback = object : LocationCallback() {
+                // 요청 결과
+                override fun onLocationResult(p0: LocationResult?) {
+                    p0?.let {
+                        for (location in it.locations) {
+                            // 현재 위치의 위경도를 격자 좌표로 변환
+                            curPoint = Common().dfs_xy_conv(location.latitude, location.longitude)
+
+                            // 앱 위젯 레이아웃 가져오기
+                            val views = RemoteViews(context!!.packageName, R.layout.weather_appwidget)
+                            // appWidgetManager 가져오기
+                            val appWidgetManager = AppWidgetManager.getInstance(context)
+                            // 위젯 컴포넌트 가져오기
+                            val widget = ComponentName(context, WeatherAppWidgetProvider::class.java)
+                            // 날씨 정보 가져오기
+                            getWeatherInfo(views, appWidgetManager, appWidgetManager.getAppWidgetIds(widget))
+                            // 업데이트 하기
+                            appWidgetManager.updateAppWidget(widget, views)
+
+                            Toast.makeText(context, "업데이트 했습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+
+            // 내 위치 실시간으로 감지
+            locationClient?.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+        } catch (e : SecurityException) {
+            e.printStackTrace()
         }
     }
 

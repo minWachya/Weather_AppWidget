@@ -6,6 +6,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
+    <!--대략적 위치, 상세 위치 권한-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!--실시간 위치 정보 엑세스 권한-->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
     <application
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
@@ -14,13 +21,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">   <!--액션바 안보이게-->
-        <activity android:name=".MainActivity">
+        <activity android:name=".Splash"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivity" android:label="메인 액티비티" />
 
         <!--위젯-->
         <receiver android:name="WeatherAppWidgetProvider" android:enabled="true" android:exported="true" >
