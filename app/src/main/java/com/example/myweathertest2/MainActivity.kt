@@ -27,10 +27,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var weatherRecyclerView : RecyclerView
     lateinit var tvDate : TextView
 
-    private var base_date = "20210510"  // 발표 일자
-    private var base_time = "1400"      // 발표 시각
-    private var nx = "55"               // 예보지점 X 좌표
-    private var ny = "127"              // 예보지점 Y 좌표
+    lateinit var base_date : String  // 발표 일자
+    lateinit var base_time : String  // 발표 시각
 
     private var curPoint : Point? = null    // 현재 위치의 격자 좌표를 저장할 포인트
 
@@ -38,8 +36,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        tvDate = findViewById<TextView>(R.id.tvDate)                                // 오늘 날짜 텍스트뷰
-        weatherRecyclerView = findViewById<RecyclerView>(R.id.weatherRecyclerView)  // 날씨 리사이클러 뷰
+        tvDate = findViewById(R.id.tvDate)                                // 오늘 날짜 텍스트뷰
+        weatherRecyclerView = findViewById(R.id.weatherRecyclerView)  // 날씨 리사이클러 뷰
         val btnRefresh = findViewById<Button>(R.id.btnRefresh)                          // 새로고침 버튼
 
         // 리사이클러 뷰 매니저 설정
