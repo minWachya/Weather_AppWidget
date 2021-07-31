@@ -11,7 +11,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myweathertest2.Adapter.WeatherAdapter
+import com.example.myweathertest2.Adapter.WeatherAdapter1
+import com.example.myweathertest2.Adapter.WeatherAdapter2
 import com.example.myweathertest2.Model.ModelWeather
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -24,7 +25,8 @@ import java.util.*
 
 // 메인 액티비티
 class MainActivity : AppCompatActivity() {
-    lateinit var weatherRecyclerView : RecyclerView
+    lateinit var weatherRecyclerView1 : RecyclerView    // 날씨 리사이클러 뷰(가로 슿라이드, 분홍)
+    lateinit var weatherRecyclerView2 : RecyclerView    // 날씨 리사이클러 뷰(세로 슿라이드, 하늘)
     lateinit var tvDate : TextView
 
     lateinit var base_date : String  // 발표 일자
@@ -36,12 +38,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        tvDate = findViewById(R.id.tvDate)                                // 오늘 날짜 텍스트뷰
-        weatherRecyclerView = findViewById(R.id.weatherRecyclerView)  // 날씨 리사이클러 뷰
-        val btnRefresh = findViewById<Button>(R.id.btnRefresh)                          // 새로고침 버튼
+        tvDate = findViewById(R.id.tvDate)                              // 오늘 날짜 텍스트뷰
+        weatherRecyclerView1 = findViewById(R.id.weatherRecyclerView1)  // 날씨 리사이클러 뷰(가로 슿라이드, 분홍)
+        weatherRecyclerView2 = findViewById(R.id.weatherRecyclerView2)  // 날씨 리사이클러 뷰(세로 슿라이드, 하늘)
+        val btnRefresh = findViewById<Button>(R.id.btnRefresh)          // 새로고침 버튼
 
-        // 리사이클러 뷰 매니저 설정
-        weatherRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+        // xml 에서 설정 : app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+//        // 리사이클러 뷰1(가로 슿라이드) 매니저 설정
+//        weatherRecyclerView1.layoutManager = LinearLayoutManager(this@MainActivity)
+//        // 리사이클러 뷰2(세로 슿라이드) 매니저 설정
+//        weatherRecyclerView2.layoutManager = LinearLayoutManager(this@MainActivity)
 
         // 내 위치 위경도 가져와서 날씨 정보 설정하기
         requestLocation()
@@ -101,8 +107,10 @@ class MainActivity : AppCompatActivity() {
                     // 각 날짜 배열 시간 설정
                     for (i in 0..5) weatherArr[i].fcstTime = it[i].fcstTime
 
-                    // 리사이클러 뷰에 데이터 연결
-                    weatherRecyclerView.adapter = WeatherAdapter(weatherArr)
+                    // 리사이클러 뷰1(가로 슿라이드, 분홍)에 데이터 연결
+                    weatherRecyclerView1.adapter = WeatherAdapter1(weatherArr)
+                    // 리사이클러 뷰2(세로 슿라이드, 하늘)에 데이터 연결
+                    weatherRecyclerView2.adapter = WeatherAdapter2(weatherArr)
 
                     // 토스트 띄우기
                     Toast.makeText(applicationContext, it[0].fcstDate + ", " + it[0].fcstTime + "의 날씨 정보입니다.", Toast.LENGTH_SHORT).show()

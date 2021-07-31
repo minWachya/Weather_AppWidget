@@ -8,15 +8,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myweathertest2.Model.ModelWeather
 import com.example.myweathertest2.R
 
-class WeatherAdapter (var items : Array<ModelWeather>) : RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
-    // 뷰 홀더 만들어서 반환, 뷰릐 레이아웃은 list_item_weather.xml
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherAdapter.ViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.list_item_weather, parent, false)
+class WeatherAdapter2 (var items : Array<ModelWeather>) : RecyclerView.Adapter<WeatherAdapter2.ViewHolder>() {
+    // 뷰 홀더 만들어서 반환, 뷰릐 레이아웃은 list_item_weather2.xml
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherAdapter2.ViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_list_weather2, parent, false)
         return ViewHolder(itemView)
     }
 
     // 전달받은 위치의 아이템 연결
-    override fun onBindViewHolder(holder: WeatherAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: WeatherAdapter2.ViewHolder, position: Int) {
         val item = items[position]
         holder.setItem(item)
     }

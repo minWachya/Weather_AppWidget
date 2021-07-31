@@ -58,7 +58,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         val timeH = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 시각
         val timeM = SimpleDateFormat("HH", Locale.getDefault()).format(cal.time) // 현재 분
         // API 가져오기 적당하게 변환
-        var base_time = Common().getBaseTime(timeH, timeM)
+        val base_time = Common().getBaseTime(timeH, timeM)
         // 현재 시각이 00시이고 45분 이하여서 baseTime이 2330이면 어제 정보 받아오기
         if (timeH == "00" && base_time == "2330") {
             cal.add(Calendar.DATE, -1).toString()
