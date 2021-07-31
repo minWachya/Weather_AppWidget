@@ -41,7 +41,7 @@ class WeatherAdapter1 (var items : Array<ModelWeather>) : RecyclerView.Adapter<W
     }
 
     fun getWeatherImage(sky : String) : Int {
-        // 하능 상태
+        // 하늘 상태
         return when(sky) {
             "1" ->R.drawable.sun              // 맑음
             "3" ->  R.drawable.very_cloudy    // 구름 많음

@@ -111,7 +111,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
 
     // 텍스트 뷰에 날씨 정보 보여주기
     fun setTextView(views: RemoteViews, sky: String, temp: Int) {
-        // 하능 상태
+        // 하늘 상태
         when(sky) {
             "1" -> views.setImageViewResource(R.id.imgSky, R.drawable.sun)          // 맑음
             "3" -> views.setImageViewResource(R.id.imgSky, R.drawable.very_cloudy)  // 구름 많음
