@@ -32,7 +32,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.weather_appwidget)
 
         // 날씨 이미지 클릭 시 앱으로 이동
-        val pendingIntent: PendingIntent = Intent(context, MainActivity::class.java)
+        val pendingIntent: PendingIntent = Intent(context, Splash::class.java)
                 .let { intent ->
                     PendingIntent.getActivity(context, 0, intent, 0)
                 }
@@ -44,6 +44,9 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
 
         // 내 위치 위경도 가져와서 날씨 정보 설정하기
         requestLocation(context)
+
+        // 업데이트 하기
+        appWidgetManager.updateAppWidget(appWidgetIds, views)
     }
 
     // 날씨 정보 가져오기
@@ -155,6 +158,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         if (intent?.action == ACTION_BTN) {
             // 앱 위젯 레이아웃 가져오기
             requestLocation(context!!)
+            Toast.makeText(context, "업데이트 했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -186,9 +190,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                             // 날씨 정보 가져오기
                             getWeatherInfo(views, appWidgetManager, appWidgetManager.getAppWidgetIds(widget))
                             // 업데이트 하기
-                            appWidgetManager.updateAppWidget(widget, views)
-
-                            Toast.makeText(context, "업데이트 했습니다.", Toast.LENGTH_SHORT).show()
+                            appWidgetManager.updateAppWidget(appWidgetManager.getAppWidgetIds(widget), views)
                         }
                     }
                 }
