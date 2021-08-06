@@ -10,6 +10,7 @@ import android.graphics.Point
 import android.os.Looper
 import android.util.Log
 import android.widget.RemoteViews
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -204,5 +205,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
             e.printStackTrace()
         }
     }
+
+    // 글씨색 변경경
 
 }

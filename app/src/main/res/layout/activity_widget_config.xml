@@ -5,6 +5,48 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="위젯 설정"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"/>
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="글씨 색상"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_marginLeft="20dp"/>
+    <RadioGroup
+        android:id="@+id/rdoGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
+        <RadioButton
+            android:id="@+id/rdoWhite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="흰색"
+            android:textSize="20sp"/>
+        <RadioButton
+            android:id="@+id/rdoBlack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="검은색"
+            android:textSize="20sp"
+            android:checked="true"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnSetting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="설정 완료"/>
 
 </LinearLayout>

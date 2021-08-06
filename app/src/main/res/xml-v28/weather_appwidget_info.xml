@@ -17,8 +17,5 @@
 <!--previewImage : 앱 위젯 선택시 보이는 이미지-->
 <!--initialLayout : 잠금화면용 위젯 설정-->
 <!--widgetCategory : 앱 위젯을 홈 화면(home_screen), 잠금화면(keyguard) 또는 둘 다 중 어디에 표시할지?-->
-<!--configure : 위젯 설정 액티비티-->
+<!--configure : 위젯 꾹 누르면 설정 나오게 하기, 위젯 설정 액티비티 정의-->
 <!--widgetFeatures : 사용자가 위젯 재구성(API28 이상)-->
-
-<!--android:configure="com.example.android.WeatherAppWidgetConfigure"-->
-<!--configure : 사용자가 앱 위젯을 추가할 때 앱 위젯 속성을 구성하기 위해 실행할 수 있는 Activity를 정의-->
