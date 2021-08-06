@@ -11,7 +11,7 @@
 <!--minWidth, minHeight : 최소 크기는 2x1-->
 <!--updatePeriodMillis : 업데이트 주기 (1시간)-->
 <!--resizeMode : 사용자가 위젯 크기를 재정의할 수 있는지? none이면 재정의 불가,
-                horizontal 또는 vertical면 가능-->
+                horizontal 또는 vertical 이면 가능-->
 <!--previewImage : 앱 위젯 선택시 보이는 이미지-->
 <!--initialLayout : 잠금화면용 위젯 설정-->
 <!--widgetCategory : 앱 위젯을 홈 화면(home_screen), 잠금화면(keyguard) 또는 둘 다 중 어디에 표시할지?-->

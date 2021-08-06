@@ -38,7 +38,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                 }
         views.setOnClickPendingIntent(R.id.imgSky, pendingIntent)
 
-        // 업데이트 이미지 누르면 업데이트 하기
+        // 업데이트 이미지 누르면 업데이트 하도록 Action 설정
         val widgetIntent = Intent(context, WeatherAppWidgetProvider::class.java).setAction(ACTION_BTN)
         views.setOnClickPendingIntent(R.id.imgRefresh, PendingIntent.getBroadcast(context, 0, widgetIntent, 0))
 
@@ -111,6 +111,9 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
 
     // 텍스트 뷰에 날씨 정보 보여주기
     fun setTextView(views: RemoteViews, sky: String, temp: Int) {
+        // 업데이트 시간을 현재 시간으로 수정하기
+        views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
+
         // 하늘 상태
         when(sky) {
             "1" -> views.setImageViewResource(R.id.imgSky, R.drawable.sun)          // 맑음
@@ -136,9 +139,6 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
             else -> "패딩, 누빔 옷, 목도리"
         }
         views.setTextViewText(R.id.tvRecommends, result)
-
-        // 업데이트 시간을 현재 시간으로 수정하기
-        views.setTextViewText(R.id.tvUpdate, SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().time).toString())
     }
 
     // 유저가 앱 위젯을 최초로 추가될 때 호출
@@ -182,7 +182,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                             curPoint = Common().dfs_xy_conv(location.latitude, location.longitude)
 
                             // 앱 위젯 레이아웃 가져오기
-                            val views = RemoteViews(context!!.packageName, R.layout.weather_appwidget)
+                            val views = RemoteViews(context.packageName, R.layout.weather_appwidget)
                             // appWidgetManager 가져오기
                             val appWidgetManager = AppWidgetManager.getInstance(context)
                             // 위젯 컴포넌트 가져오기
@@ -191,13 +191,15 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                             getWeatherInfo(views, appWidgetManager, appWidgetManager.getAppWidgetIds(widget))
                             // 업데이트 하기
                             appWidgetManager.updateAppWidget(appWidgetManager.getAppWidgetIds(widget), views)
+                            // 위치 업데이트 중지
+                            locationClient.removeLocationUpdates(this)
                         }
                     }
                 }
             }
 
             // 내 위치 실시간으로 감지
-            locationClient?.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+            locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
         } catch (e : SecurityException) {
             e.printStackTrace()
         }
