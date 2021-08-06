@@ -30,6 +30,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" android:label="메인 액티비티" />
+        <activity android:name=".WidgetConfigActivity" android:label="위젯 설정 액티비티" />
 
         <!--위젯-->
         <receiver android:name="WeatherAppWidgetProvider" android:enabled="true" android:exported="true" >
