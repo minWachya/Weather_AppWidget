@@ -47,6 +47,7 @@ class WidgetConfigActivity : AppCompatActivity() {
             edit.apply()
 
             // 브로드캐스팅(위젯으로 정보 보내기)
+            setResult(RESULT_OK, intent)
             sendBroadcast(intent)
 
             finish()
