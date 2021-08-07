@@ -23,13 +23,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class WeatherAppWidgetProvider : AppWidgetProvider() {
-    private val ACTION_BTN = "android.appwidget.action.APPWIDGET_UPDATE"  // 리프레시 버튼 누름
-    private val ACTION_SETTING_BLACK_BTN = "APPWIDGET_SEL_BLACK"    // 글씨색 검정색으로
-    private val ACTION_SETTING_WHITE_BTN = "APPWIDGET_SEL_WHITE"    // 글씨색 흰색으로
-
     private var curPoint : Point? = null    // 현재 위치의 격자 좌표를 저장할 포인트
 
-    private val textViewArr = arrayOf(R.id.tvTemp, R.id.tvRecommends, R.id.tvUpdate)
+    private val textViewArr = arrayOf(R.id.tvTemp, R.id.tvRecommends, R.id.tvUpdate)    // 텍스트뷰 배열
+
+    private val APPWIDGET_UPDATE = "@string/APPWIDGET_UPDATE"           // 업데이트 버튼 누름
+    private val WIDGET_SETTING_BLACK = "@string/WIDGET_SETTING_BLACK"   // 위젯 설정 액티비티에서 글씨색 검정색으로 설정
+    private val WIDGET_SETTING_WHITE = "@string/WIDGET_SETTING_WHITE"   // 위젯 설정 액티비티에서 글씨색 흰색으로 설정
 
     // 위젯이 추가될 때마다 호출
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
@@ -44,7 +44,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         views.setOnClickPendingIntent(R.id.imgSky, pendingIntent)
 
         // 업데이트 이미지 누르면 업데이트 하도록 Action 설정
-        val widgetIntent = Intent(context, WeatherAppWidgetProvider::class.java).setAction(ACTION_BTN)
+        val widgetIntent = Intent(context, WeatherAppWidgetProvider::class.java).setAction(APPWIDGET_UPDATE)
         views.setOnClickPendingIntent(R.id.imgRefresh, PendingIntent.getBroadcast(context, 0, widgetIntent, 0))
 
         // 업데이트 하기
@@ -160,16 +160,18 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
 
-        val result = intent?.action
+        Log.d("mmm onRecive", intent?.action.toString())
 
-        when (result) {
-            ACTION_BTN -> {
+        when (intent?.action) {
+            // 업데이트 하기
+            APPWIDGET_UPDATE -> {
                 // 앱 위젯 레이아웃 가져오기
                 requestLocation(context!!)
                 Toast.makeText(context, "업데이트 했습니다.", Toast.LENGTH_SHORT).show()
             }
-            ACTION_SETTING_BLACK_BTN -> changeTextViewColor(Color.BLACK, context!!)
-            ACTION_SETTING_WHITE_BTN -> changeTextViewColor(Color.WHITE, context!!)
+            // 글씨색 변경하기
+            WIDGET_SETTING_BLACK -> changeTextViewColor(Color.BLACK, context!!)
+            WIDGET_SETTING_WHITE -> changeTextViewColor(Color.WHITE, context!!)
         }
     }
 

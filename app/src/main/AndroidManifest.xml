@@ -33,11 +33,14 @@
         <activity android:name=".WidgetConfigActivity" android:label="위젯 설정 액티비티" />
 
         <!--위젯-->
-        <receiver android:name="WeatherAppWidgetProvider" android:enabled="true" android:exported="true" >
+        <receiver android:name="WeatherAppWidgetProvider" android:enabled="true" android:exported="true" android:label="@string/widget_name">
             <intent-filter>
+                <!--업데이트 버튼 누르면 동적으로 업데이트 하기-->
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="APPWIDGET_SEL_BLACK" />
-                <action android:name="APPWIDGET_SEL_WHITE" />
+                <!--위젯 설정 액티비티에서 검정색으로 TextView 색 변경하도록 설정함-->
+                <action android:name="WIDGET_SETTING_BLACK" />
+                <!--위젯 설정 액티비티에서 흰색으로 TextView 색 변경하도록 설정함-->
+                <action android:name="WIDGET_SETTING_WHITE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/weather_appwidget_info" />
