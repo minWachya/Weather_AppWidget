@@ -12,7 +12,6 @@ import android.os.Looper
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -147,24 +146,24 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         views.setTextViewText(R.id.tvRecommends, result)
     }
 
-    // 유저가 앱 위젯을 최초로 추가될 때 호출
-    override fun onEnabled(context: Context?) {
-        super.onEnabled(context)
-
-//        // 텍스트뷰 색 검정색으로 저장
-//        val pref = context!!.getSharedPreferences("pref", AppCompatActivity.MODE_PRIVATE)
-//        val edit = pref.edit()
-//        edit.putString("SELECT_COLOR", "black").apply()
-
-        Toast.makeText(context, "날씨 위젯 최초 호출", Toast.LENGTH_SHORT).show()
-    }
-
-    // 유저가 엡 위젯을 회초로 삭제될 때 호출
-    override fun onDisabled(context: Context?) {
-        super.onDisabled(context)
-
-        Toast.makeText(context, "날씨 위젯 삭제", Toast.LENGTH_SHORT).show()
-    }
+//    // 유저가 앱 위젯을 최초로 추가될 때 호출
+//    override fun onEnabled(context: Context?) {
+//        super.onEnabled(context)
+//
+////        // 텍스트뷰 색 검정색으로 저장
+////        val pref = context!!.getSharedPreferences("pref", AppCompatActivity.MODE_PRIVATE)
+////        val edit = pref.edit()
+////        edit.putString("SELECT_COLOR", "black").apply()
+//
+//        Toast.makeText(context, "날씨 위젯 최초 호출", Toast.LENGTH_SHORT).show()
+//    }
+//
+//    // 유저가 엡 위젯을 회초로 삭제될 때 호출
+//    override fun onDisabled(context: Context?) {
+//        super.onDisabled(context)
+//
+//        Toast.makeText(context, "날씨 위젯 삭제", Toast.LENGTH_SHORT).show()
+//    }
 
     // 앱 위젯 브로드캐스트 수신
     override fun onReceive(context: Context?, intent: Intent?) {
