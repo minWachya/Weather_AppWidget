@@ -3,7 +3,7 @@
     android:minHeight="40dp"
     android:updatePeriodMillis="3600000"
     android:resizeMode="none"
-    android:previewImage="@drawable/ic_launcher_foreground"
+    android:previewImage="@drawable/preview_widget"
     android:initialLayout="@layout/weather_appwidget"
     android:widgetCategory="home_screen|keyguard"
     android:configure="com.example.myweathertest2.WidgetConfigActivity"
