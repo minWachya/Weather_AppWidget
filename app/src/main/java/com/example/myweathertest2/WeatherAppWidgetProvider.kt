@@ -6,11 +6,11 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Point
 import android.os.Looper
 import android.util.Log
 import android.widget.RemoteViews
-import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -23,9 +23,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class WeatherAppWidgetProvider : AppWidgetProvider() {
-    private val ACTION_BTN = "ButtonClick"  // 리프레시 버튼 누름
+    private val ACTION_BTN = "android.appwidget.action.APPWIDGET_UPDATE"  // 리프레시 버튼 누름
+    private val ACTION_SETTING_BLACK_BTN = "APPWIDGET_SEL_BLACK"    // 글씨색 검정색으로
+    private val ACTION_SETTING_WHITE_BTN = "APPWIDGET_SEL_WHITE"    // 글씨색 흰색으로
 
     private var curPoint : Point? = null    // 현재 위치의 격자 좌표를 저장할 포인트
+
+    private val textViewArr = arrayOf(R.id.tvTemp, R.id.tvRecommends, R.id.tvUpdate)
 
     // 위젯이 추가될 때마다 호출
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
@@ -43,11 +47,11 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         val widgetIntent = Intent(context, WeatherAppWidgetProvider::class.java).setAction(ACTION_BTN)
         views.setOnClickPendingIntent(R.id.imgRefresh, PendingIntent.getBroadcast(context, 0, widgetIntent, 0))
 
-        // 내 위치 위경도 가져와서 날씨 정보 설정하기
-        requestLocation(context)
-
         // 업데이트 하기
         appWidgetManager.updateAppWidget(appWidgetIds, views)
+
+        // 내 위치 위경도 가져와서 날씨 정보 설정하기
+        requestLocation(context)
     }
 
     // 날씨 정보 가져오기
@@ -156,10 +160,16 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
 
-        if (intent?.action == ACTION_BTN) {
-            // 앱 위젯 레이아웃 가져오기
-            requestLocation(context!!)
-            Toast.makeText(context, "업데이트 했습니다.", Toast.LENGTH_SHORT).show()
+        val result = intent?.action
+
+        when (result) {
+            ACTION_BTN -> {
+                // 앱 위젯 레이아웃 가져오기
+                requestLocation(context!!)
+                Toast.makeText(context, "업데이트 했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            ACTION_SETTING_BLACK_BTN -> changeTextViewColor(Color.BLACK, context!!)
+            ACTION_SETTING_WHITE_BTN -> changeTextViewColor(Color.WHITE, context!!)
         }
     }
 
@@ -191,7 +201,7 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
                             // 날씨 정보 가져오기
                             getWeatherInfo(views, appWidgetManager, appWidgetManager.getAppWidgetIds(widget))
                             // 업데이트 하기
-                            appWidgetManager.updateAppWidget(appWidgetManager.getAppWidgetIds(widget), views)
+                            //appWidgetManager.updateAppWidget(appWidgetManager.getAppWidgetIds(widget), views)
                             // 위치 업데이트 중지
                             locationClient.removeLocationUpdates(this)
                         }
@@ -206,6 +216,23 @@ class WeatherAppWidgetProvider : AppWidgetProvider() {
         }
     }
 
-    // 글씨색 변경경
+    // 글씨색 변경
+    private fun changeTextViewColor(color : Int, context : Context) {
+        // 앱 위젯 레이아웃 가져오기
+        val views = RemoteViews(context.packageName, R.layout.weather_appwidget)
+
+        // 글씨색 변경
+        textViewArr.forEach { id ->
+            views.setTextColor(id, color)
+        }
+        Toast.makeText(context, "글씨색을 변경하였습니다.", Toast.LENGTH_SHORT).show()
+
+        // appWidgetManager 가져오기
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        // 위젯 컴포넌트 가져오기
+        val widget = ComponentName(context, WeatherAppWidgetProvider::class.java)
+        // 업데이트 하기
+        appWidgetManager.updateAppWidget(appWidgetManager.getAppWidgetIds(widget), views)
+    }
 
 }

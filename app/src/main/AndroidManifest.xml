@@ -36,6 +36,8 @@
         <receiver android:name="WeatherAppWidgetProvider" android:enabled="true" android:exported="true" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="APPWIDGET_SEL_BLACK" />
+                <action android:name="APPWIDGET_SEL_WHITE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/weather_appwidget_info" />
